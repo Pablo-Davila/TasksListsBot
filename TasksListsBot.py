@@ -1,9 +1,10 @@
 ﻿import telebot
 import json
+import sys
 
 from telebot import types
 
-bot = telebot.TeleBot("1218416710:AAG32Fl5sCmdiwYNIu2mYFF3R-N9WVg3QwY")
+bot = telebot.TeleBot(sys.argv[1])
 
 help_eng = {
 	'lists': "Display the curret set of lists.",
@@ -347,4 +348,5 @@ def command_id(message):
 	cid = message.chat.id
 	bot.send_message(cid,f"El id de tu chat es {cid}")
 	
+print("Running TasksListsBot.py")
 bot.polling()
