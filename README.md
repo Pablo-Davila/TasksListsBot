@@ -6,7 +6,7 @@ It is based on [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI"
 **Try it in Telegram**: [TasksListsBot](https://t.me/TasksListsBot)
 
 ## Usage
-Simply run TasksListsBot.py with a previously registered bot's token as an argument.
+Simply run TasksListsBot.py with a previously [registered](https://core.telegram.org/bots#6-botfather) bot's token as an argument.
 
 ```
 $ python TasksListsBot WriteYourTelegramBotTokenHere
