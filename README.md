@@ -1,4 +1,4 @@
-<h1 align="center">TasksListsBot</p>
+<h1 align="center">TasksListsBot</h1>
 
 TasksListsBot is a Telegram bot used to manage multiple tasks lists within Telegram chats.
 It is based on [pyTelegramBotAPI](https://github.com/eternnoir/pyTelegramBotAPI"), a simple Python implementation for the [Telegram Bot API](https://core.telegram.org/bots/api).
