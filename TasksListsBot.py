@@ -84,6 +84,8 @@ def showList(cid, listName):
 		if(len(ls) == 0):
 			res += "\n(Esta lista está vacía)"
 		bot.send_message(cid, res, reply_markup=menuMarkup())
+	elif listName == "":
+		bot.send_message(cid, "Debes indicar una lista.")
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.", reply_markup=menuMarkup())
 		
@@ -108,34 +110,34 @@ def deleteTask(cid, listName, taskNumber):
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.")
 
-@bot.message_handler(commands=['start','Start'])
+@bot.message_handler(regexp="^/start(?i)")
 def command_start(message):
 	'''Realiza el saludo inicial.'''
 	user = message.from_user
 	cid = message.chat.id
-	ans = f"Hello {user.first_name} {user.last_name}. Nice to meet you!"
-	ans += "\nUse /help to access the command-list."
+	ans = f"Hola {user.first_name} {user.last_name}. Encantado de conocerte!"
+	ans += "\nEscribe /help para acceder a la lista de comandos básicos."
 	bot.send_message(cid, ans)
 
-@bot.message_handler(commands=['help','Help'])
+@bot.message_handler(regexp="^/help(?i)")
 def command_help(message):
 	'''Muestra los comandos básicos.'''
 	cid = message.chat.id
-	help = "These are the basic commands:"
+	help = "Estos son los comandos básicos:"
 	for c in help_spa:
 		help += f"\n*/{c}*: {help_spa[c]}"
 	bot.send_message(cid, help, parse_mode='Markdown')
 
-@bot.message_handler(commands=['advanced','Advanced'])
+@bot.message_handler(regexp="^/advanced(?i)")
 def command_advanced(message):
 	'''Muestra los comandos avanzados.'''
 	cid = message.chat.id
-	help = "These are the advanced commands:"
+	help = "Estos son los comandos avanzados:"
 	for c in advanced_spa:
 		help += f"\n*/{c}*: {advanced_spa[c]}"
 	bot.send_message(cid, help, parse_mode='Markdown')
 
-@bot.message_handler(commands=['new','news','New','News'])
+@bot.message_handler(regexp="^/new(s)?(?i)")
 def command_news(message):
 	'''Muestra las últimas novedades del dessarrollo del bot.'''
 	cid = message.chat.id
@@ -147,18 +149,11 @@ def command_news(message):
 def showTEMP(message):
 	showList(message.chat.id, message.text.split('#')[0][:-1])
 
-@bot.message_handler(commands=['lists','Lists','list','List'])
+@bot.message_handler(regexp="^/list(s)?(?i)")
 def command_lists(message):
 	'''Muestra las listas disponibles en este chat y el número de elementos de las mismas.'''
 	cid = message.chat.id
 	dic = getLists(cid)
-	''' Respuesta mediante texto (antiguo)
-	res = "Estas son las listas registradas:"
-	for l in dic.keys():
-		res += f"\n - {l} ({len(dic[l])})"
-	if(dic == {}):
-		res += "\n(Aún no se ha creado ninguna lista)"
-	bot.send_message(cid, res)'''
 	markup = types.ReplyKeyboardMarkup(one_time_keyboard=True,selective=True)
 	if(dic == {}):
 		bot.send_message(cid,"Aún no se ha creado ninguna lista.")
@@ -180,9 +175,9 @@ def command_lists(message):
 		msg = bot.reply_to(message, "Elige una lista", reply_markup=markup)
 		bot.register_next_step_handler(msg, showTEMP)
 	
-@bot.message_handler(commands=['addList','addlist','AddList','Addlist'])
+@bot.message_handler(regexp="^/addList(?i)")
 def command_addList(message):
-	'''Crea una lista nueva con el nombre especificado'''
+	'''Crea una lista nueva con el nombre especificado.'''
 	cid = message.chat.id
 	listName = toSentence(message.text[9:])
 	
@@ -196,7 +191,7 @@ def command_addList(message):
 	else:
 		bot.send_message(cid, "El nombre de la lista debe tener al menos 3 caracteres.")
 
-@bot.message_handler(commands=['add','Add'])
+@bot.message_handler(regexp="^/add(?i)")
 def command_add(message):
 	'''Añade una única tarea a una lista dada.'''
 	cid = message.chat.id
@@ -210,7 +205,7 @@ def command_add(message):
 		dic = getLists(cid)
 		
 		if(len(taskName) < 3):
-			bot.send_message(cid, "La descripción de la tarea debe tener al menos 3 caracteres.")
+			bot.send_message(cid, "El nombre de la tarea debe tener al menos 3 caracteres.")
 		elif(not listName in dic.keys()):
 			bot.send_message(cid, f"La lista {listName} no existe.")
 		else:
@@ -219,7 +214,7 @@ def command_add(message):
 			writeLists(cid,dic)
 			bot.send_message(cid, f"Se ha añadido \"{taskName}\" a la lista \"{listName}\".")
 
-@bot.message_handler(commands=['addAll','addall','AddAll','Addall'])
+@bot.message_handler(regexp="^/addAll(?i)")
 def command_addAll(message):
 	'''Añade múltiples tareas (separadas por línea) a la lista indicada.'''
 	cid = message.chat.id
@@ -231,9 +226,7 @@ def command_addAll(message):
 		listName = toSentence(partes[0][8:])
 		tasks = partes[1:]
 		dic = getLists(cid)
-		if(not listName in dic.keys()):
-			bot.send_message(cid, f"La lista {listName} no existe.")
-		else:
+		if listName in dic.keys():
 			ls = dic[listName]
 			c = 0
 			for taskName in tasks:
@@ -243,8 +236,10 @@ def command_addAll(message):
 					c += 1
 			writeLists(cid,dic)
 			bot.send_message(cid, f"Se han añadido {c} tareas a la lista \"{listName}\".")
+		else:
+			bot.send_message(cid, f"La lista {listName} no existe.")
 		
-@bot.message_handler(commands=["show","Show"])
+@bot.message_handler(regexp="^/show(?i)")
 def command_show(message):
 	'''Muestra todas las tareas de la lista indicada.'''
 	cid = message.chat.id
@@ -252,7 +247,7 @@ def command_show(message):
 	listName = toSentence(message.text[6:])
 	showList(cid, listName)
 
-@bot.message_handler(commands=["delList","dellist","DelList","Dellist"])
+@bot.message_handler(regexp="^/dellist(?i)")
 def command_delList(message):
 	'''Elimina una lista y todas sus tareas asociades.'''
 	cid = message.chat.id
@@ -263,11 +258,12 @@ def command_delList(message):
 		dic.pop(listName)
 		writeLists(cid, dic)
 		bot.send_message(cid, f"La lista {listName} ha sido eliminada.")
+	elif listName == "":
+		bot.send_message(cid, "Debes indicar la lista que eliminar.")
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.")
-	pass
 
-@bot.message_handler(commands=["del","Del"])
+@bot.message_handler(regexp="^/del(?i)")
 def command_del(message):
 	'''Elimina una única tarea de la lista especificada.'''
 	cid = message.chat.id
@@ -280,7 +276,7 @@ def command_del(message):
 		listName = toSentence(partes[0][5:])
 		deleteTask(cid, listName, partes[1])
 
-@bot.message_handler(commands=["delAll","DelAll","delall","Delall"])
+@bot.message_handler(regexp="^/delAll(?i)")
 def command_del(message):
 	'''Elimina una única tarea de la lista especificada.'''
 	cid = message.chat.id
@@ -295,7 +291,7 @@ def command_del(message):
 		for num in indices:
 			deleteTask(cid, listName, num)
 	
-@bot.message_handler(commands=["empty"])
+@bot.message_handler(regexp="^/(empty|clear)(?i)")
 def command_del(message):
 	'''Elimina todas las tareas de la lista especificada.'''
 	cid = message.chat.id
@@ -307,10 +303,12 @@ def command_del(message):
 		dic[listName] = []
 		writeLists(cid, dic)
 		bot.send_message(cid, f"Se han eliminado {size} tareas de la lista \"{listName}\".")
+	elif listName == "":
+		bot.send_message(cid, "Debes indicar la lista que vaciar."
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.")
 
-@bot.message_handler(commands=["done","Done"])
+@bot.message_handler(regexp="^/done(?i)")
 def command_done(message):
 	'''Marca como hecha una única tarea de una lista concreta.'''
 	cid = message.chat.id
@@ -343,10 +341,10 @@ def command_done(message):
 		else:
 			bot.send_message(cid, f"La lista {listName} no existe.")
 
-@bot.message_handler(commands=["id"])
+@bot.message_handler(regexp="^/id(?i)")
 def command_id(message):
 	cid = message.chat.id
 	bot.send_message(cid,f"El id de tu chat es {cid}")
 	
-print("Running TasksListsBot.py")
+print("\nRunning TasksListsBot.py")
 bot.polling()
