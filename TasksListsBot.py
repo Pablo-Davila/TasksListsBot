@@ -85,7 +85,7 @@ def showList(cid, listName):
 			res += "\n(Esta lista está vacía)"
 		bot.send_message(cid, res, reply_markup=menuMarkup())
 	elif listName == "":
-		bot.send_message(cid, "Debes indicar una lista.")
+		bot.send_message(cid, "Debe indicar una lista.")
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.", reply_markup=menuMarkup())
 		
@@ -115,8 +115,8 @@ def command_start(message):
 	'''Realiza el saludo inicial.'''
 	user = message.from_user
 	cid = message.chat.id
-	ans = f"Hola {user.first_name} {user.last_name}. Encantado de conocerte!"
-	ans += "\nEscribe /help para acceder a la lista de comandos básicos."
+	ans = f"Hola {user.first_name} {user.last_name}. Encantado de conocerle!"
+	ans += "\nEscriba /help para acceder a la lista de comandos básicos."
 	bot.send_message(cid, ans)
 
 @bot.message_handler(regexp="^/help(?i)")
@@ -172,7 +172,7 @@ def command_lists(message):
 			markup.row(fila[0])
 		elif(c == 2):
 			markup.row(fila[0],fila[1])
-		msg = bot.reply_to(message, "Elige una lista", reply_markup=markup)
+		msg = bot.reply_to(message, "Elija una lista", reply_markup=markup)
 		bot.register_next_step_handler(msg, showTEMP)
 	
 @bot.message_handler(regexp="^/addList(?i)")
@@ -259,7 +259,7 @@ def command_delList(message):
 		writeLists(cid, dic)
 		bot.send_message(cid, f"La lista {listName} ha sido eliminada.")
 	elif listName == "":
-		bot.send_message(cid, "Debes indicar la lista que eliminar.")
+		bot.send_message(cid, "Debe indicar la lista que eliminar.")
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.")
 
@@ -304,7 +304,7 @@ def command_del(message):
 		writeLists(cid, dic)
 		bot.send_message(cid, f"Se han eliminado {size} tareas de la lista \"{listName}\".")
 	elif listName == "":
-		bot.send_message(cid, "Debes indicar la lista que vaciar."
+		bot.send_message(cid, "Debe indicar la lista que vaciar.")
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.")
 
@@ -344,7 +344,7 @@ def command_done(message):
 @bot.message_handler(regexp="^/id(?i)")
 def command_id(message):
 	cid = message.chat.id
-	bot.send_message(cid,f"El id de tu chat es {cid}")
+	bot.send_message(cid,f"El id de su chat es {cid}")
 	
 print("\nRunning TasksListsBot.py")
 bot.polling()
