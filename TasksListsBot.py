@@ -181,7 +181,7 @@ def command_start(message):
 	'''Realiza el saludo inicial.'''
 	user = message.from_user
 	cid = message.chat.id
-	ans = f"Hola {user.first_name} {user.last_name}. Encantado de conocerle!"
+	ans = f"Hola{' ' + user.first_name if user.first_name else ''}{' ' + user.last_name if user.last_name else ''}. Encantado de conocerle!"
 	ans += "\nEscriba /help para acceder a la lista de comandos básicos."
 	bot.send_message(cid, ans)
 
