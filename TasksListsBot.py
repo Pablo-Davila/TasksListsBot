@@ -87,7 +87,7 @@ def showList(cid, listName):
 			res += "\n(Esta lista está vacía)"
 		
 		keyboard = types.InlineKeyboardMarkup()
-		keyboard.add(types.InlineKeyboardButton("➕",callback_data=f"addall#{listName}"), types.InlineKeyboardButton("✅",callback_data=f"doneall#{listName}"), types.InlineKeyboardButton("🗑️",callback_data=f"delall#{listName}"))
+		keyboard.add(types.InlineKeyboardButton("➕",callback_data=f"addall#{listName}"), types.InlineKeyboardButton("✔️",callback_data=f"doneall#{listName}"), types.InlineKeyboardButton("🗑️",callback_data=f"delall#{listName}"))
 		bot.send_message(cid, res, reply_markup=keyboard)
 	elif listName == "":
 		bot.send_message(cid, "Debe indicar una lista.")
