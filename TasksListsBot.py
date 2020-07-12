@@ -9,36 +9,38 @@ bot = telebot.TeleBot(sys.argv[1])
 help_eng = {
 	'lists': "Display the curret set of lists.",
 	'addList ListName': "Create a new empty list.",
-	'add ListName,TaskName': "Add a task to the list.",
-	'addAll ListName': "Add multiple tasks (one per line).",
-	'done ListName,TaskNumber': "Mark a task as done.",
+	'delList ListName': "Remove an existing list.",
 	'advanced': "Display advanced commands."
 }
 
 help_spa = {
 	'lists': "Mostrar el conjunto de listas actual.",
 	'addList NombreLista': "Crear una nueva lista vacía.",
-	'add NombreLista,NombreTarea': "Añadir una tarea a la lista.",
-	'addAll NombreLista': "Añadir multiples tareas (cada una en una línea).",
-	'done NombreLista,NumeroTarea': "Marcar una tarea como hecha.",
+	'delList ListName': "Eliminar una lista existente.",
 	'advanced': "Mostrar comandos avanzados."
 }
 
 advanced_eng = {
 	'show ListName': "Display the tasks of a single list.",
-	'delList ListName': "Remove an existing list.",
+	'add ListName,TaskName': "Add a task to the list.",
+	'addAll ListName': "Add multiple tasks (one per line).",
 	'del ListName,TaskNumber': "Remove a task from a list.",
 	'delAll ListName,3,1,4': "Remove multiple tasks from a list.",
+	'done ListName,TaskNumber': "Mark a task as done.",
 	'empty ListName': "Remove all the tasks in a given list.",
+	'news': "Displays the bot's most recent news",
 	'github': "Displays a link to the bot's source code"
 }
 
 advanced_spa = {
 	'show ListName': "Mostrar las tareas de una única lista.",
-	'delList ListName': "Eliminar una lista existente.",
+	'add NombreLista,NombreTarea': "Añadir una tarea a la lista.",
+	'addAll NombreLista': "Añadir multiples tareas (cada una en una línea).",
 	'del NombreLista,NumeroTarea': "Eliminar una tarea de una lista.",
 	'delAll NombreLista,3,1,4': "Eliminar multiples tareas de una lista.",
+	'done NombreLista,NumeroTarea': "Marcar una tarea como hecha.",
 	'empty NombreLista': "Eliminar todas las tareas de una lista.",
+	'news': "Muestra las últimas novedades del bot",
 	'github': "Muestra un link al código fuente del bot."
 }
 
