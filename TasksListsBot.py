@@ -29,7 +29,8 @@ advanced_eng = {
 	'delList ListName': "Remove an existing list.",
 	'del ListName,TaskNumber': "Remove a task from a list.",
 	'delAll ListName,3,1,4': "Remove multiple tasks from a list.",
-	'empty ListName': "Remove all the tasks in a given list."
+	'empty ListName': "Remove all the tasks in a given list.",
+	'github': "Displays a link to the bot's source code"
 }
 
 advanced_spa = {
@@ -37,7 +38,8 @@ advanced_spa = {
 	'delList ListName': "Eliminar una lista existente.",
 	'del NombreLista,NumeroTarea': "Eliminar una tarea de una lista.",
 	'delAll NombreLista,3,1,4': "Eliminar multiples tareas de una lista.",
-	'empty NombreLista': "Eliminar todas las tareas de una lista."
+	'empty NombreLista': "Eliminar todas las tareas de una lista.",
+	'github': "Muestra un link al código fuente del bot."
 }
 
 news = [
@@ -341,6 +343,12 @@ def command_done(message):
 		else:
 			bot.send_message(cid, f"La lista {listName} no existe.")
 
+@bot.message_handler(commands=["git", "github", "source", "src"])
+def command_github(message):
+	cid = message.chat.id
+	
+	bot.send_message(cid, "Puedes encontrar el código fuente de este bot en [GitHub](https://github.com/Pablo-Davila/TasksListsBot)", parse_mode='Markdown')
+	
 @bot.message_handler(regexp="^/id(?i)")
 def command_id(message):
 	cid = message.chat.id
