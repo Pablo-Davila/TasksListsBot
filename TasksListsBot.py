@@ -57,7 +57,7 @@ def toSentence(s):
 	return str(s).strip().capitalize()
 	
 def commandRegex(command):
-	return f"^/{command}( |$)?i)"
+	return f"^/{command}( |$)(?i)"
 
 def getLists(cid):
 	'''Devuelve el diccionario de listas del chat especificado.'''
@@ -84,11 +84,19 @@ def showList(cid, listName):
 			res += f"\n {i}. {task}"
 		if(len(ls) == 0):
 			res += "\n(Esta lista está vacía)"
-		bot.send_message(cid, res, reply_markup=menuMarkup())
+		
+		keyboard = types.InlineKeyboardMarkup()
+		keyboard.add(types.InlineKeyboardButton("➕",callback_data=f"addall#{listName}"), types.InlineKeyboardButton("✅",callback_data=f"doneall#{listName}"), types.InlineKeyboardButton("🗑️",callback_data=f"delall#{listName}"))
+		bot.send_message(cid, res, reply_markup=keyboard)
 	elif listName == "":
 		bot.send_message(cid, "Debe indicar una lista.")
 	else:
-		bot.send_message(cid, f"La lista {listName} no existe.", reply_markup=menuMarkup())
+		bot.send_message(cid, f"La lista {listName} no existe.")
+
+def showWithOptions(message):
+	listName = message.text.split('#')[0][:-1]
+	
+	showList(message.chat.id, listName)
 		
 def deleteTask(cid, listName, taskNumber):
 	dic = getLists(cid)
@@ -110,6 +118,60 @@ def deleteTask(cid, listName, taskNumber):
 			bot.send_message(cid, f"Índice fuera de rango: {num}.")
 	else:
 		bot.send_message(cid, f"La lista {listName} no existe.")
+		
+def doneTask(cid, listName, taskNumber):
+	dic = getLists(cid)
+	
+	if listName in dic.keys():
+		try:
+			taskNumber = int(taskNumber)
+			try:
+				ls = dic[listName]
+				taskName = ls.pop(taskNumber)
+				if "Hechas" in dic.keys():
+					dic["Hechas"].append(taskName)
+				else:
+					dic["Hechas"] = [taskName]
+				writeLists(cid, dic)
+				bot.send_message(cid, f"Tarea \"{taskName}\" marcada como hecha.")
+			except IndexError:
+				bot.send_message(cid, "Índice fuera de rango.")
+			except Exception as e:
+				bot.send_message(cid, "ERROR")
+				print(e)
+		except:
+			bot.send_message(cid, "Debe indicar el índice en la lista de la tarea hecha.")
+	else:
+		bot.send_message(cid, f"La lista {listName} no existe.")
+
+def addAll(cid, listName, tasks):	
+	dic = getLists(cid)
+	if listName in dic.keys():
+		ls = dic[listName]
+		c = 0
+		for taskName in tasks:
+			taskName = toSentence(taskName)
+			if(len(taskName) >= 3):
+				ls.append(taskName)
+				c += 1
+		writeLists(cid,dic)
+		bot.send_message(cid, f"Se han añadido {c} tareas a la lista \"{listName}\".")
+	else:
+		bot.send_message(cid, f"La lista {listName} no existe.")
+		
+def delAll(cid, listName, indices):
+	for i in indices:
+		i = i.strip()
+	indices = sorted(indices, reverse=True)
+	for i in indices:
+		deleteTask(cid, listName, i)
+
+def doneAll(cid, listName, indices):
+	for i in indices:
+		i = i.strip()
+	indices = sorted(indices, reverse=True)
+	for i in indices:
+		doneTask(cid, listName, i)
 
 @bot.message_handler(regexp=commandRegex("start"))
 def command_start(message):
@@ -173,8 +235,8 @@ def command_lists(message):
 			markup.row(fila[0])
 		elif(c == 2):
 			markup.row(fila[0],fila[1])
-		msg = bot.reply_to(message, "Elija una lista", reply_markup=markup)
-		bot.register_next_step_handler(msg, showTEMP)
+		msg = bot.send_message(cid, "Elija una lista", reply_markup=markup)
+		bot.register_next_step_handler(msg, showWithOptions)
 	
 @bot.message_handler(regexp=commandRegex("addList"))
 def command_addList(message):
@@ -226,19 +288,7 @@ def command_addAll(message):
 	else:
 		listName = toSentence(partes[0][8:])
 		tasks = partes[1:]
-		dic = getLists(cid)
-		if listName in dic.keys():
-			ls = dic[listName]
-			c = 0
-			for taskName in tasks:
-				taskName = toSentence(taskName)
-				if(len(taskName) >= 3):
-					ls.append(taskName)
-					c += 1
-			writeLists(cid,dic)
-			bot.send_message(cid, f"Se han añadido {c} tareas a la lista \"{listName}\".")
-		else:
-			bot.send_message(cid, f"La lista {listName} no existe.")
+		addAll(cid, listName, tasks)
 		
 @bot.message_handler(regexp=commandRegex("show"))
 def command_show(message):
@@ -278,22 +328,19 @@ def command_del(message):
 		deleteTask(cid, listName, partes[1])
 
 @bot.message_handler(regexp=commandRegex("delAll"))
-def command_del(message):
+def command_delAll(message):
 	'''Elimina una única tarea de la lista especificada.'''
 	cid = message.chat.id
-	dic = getLists(cid)
 	
 	partes = message.text.split(',')
 	if(len(partes) < 2):
 		bot.send_message(cid, "Debe indicar el nombre de la lista y el número de la tarea separados por una coma. Ejemplo: /del Lista1, 0")
 	else:
 		listName = toSentence(partes[0][7:])
-		indices = sorted(partes[1:], reverse=True)
-		for num in indices:
-			deleteTask(cid, listName, num)
+		delAll(cid,listName,partes[1:])
 	
 @bot.message_handler(regexp=commandRegex("(empty|clear)"))
-def command_del(message):
+def command_empty(message):
 	'''Elimina todas las tareas de la lista especificada.'''
 	cid = message.chat.id
 	dic = getLists(cid)
@@ -313,7 +360,6 @@ def command_del(message):
 def command_done(message):
 	'''Marca como hecha una única tarea de una lista concreta.'''
 	cid = message.chat.id
-	dic = getLists(cid)
 	
 	partes = message.text.split(',')
 	if(len(partes) < 2):
@@ -326,21 +372,7 @@ def command_done(message):
 		except:
 			bot.send_message(cid, "No ha indicado un número de tarea válido.")
 			return
-		
-		if listName in dic.keys():
-			ls = dic[listName]
-			try:
-				taskName = ls.pop(taskNumber)
-				if("Hechas" in dic.keys()):
-					dic["Hechas"].append(taskName)
-				else:
-					dic["Hechas"] = [taskName]
-				writeLists(cid, dic)
-				bot.send_message(cid, f"Tarea \"{taskName}\" marcada como hecha.")
-			except:
-				bot.send_message(cid, "Índice fuera de rango.")
-		else:
-			bot.send_message(cid, f"La lista {listName} no existe.")
+		doneTask(cid, listName, taskNumber)
 
 @bot.message_handler(commands=["git", "github", "source", "src"])
 def command_github(message):
@@ -352,6 +384,30 @@ def command_github(message):
 def command_id(message):
 	cid = message.chat.id
 	bot.send_message(cid,f"El id de su chat es {cid}")
+	
+@bot.callback_query_handler(func=lambda call: True)
+def handle_call(call):
+	cid = call.message.chat.id
+	data = call.data.split('#')
+	func = data[0]
+	
+	if func == "addall":
+		listName = data[1]
+		bot.answer_callback_query(call.id, "Success")
+		msg = bot.send_message(cid, "Escriba en líneas separadas todas las tareas que desee añadir.")
+		bot.register_next_step_handler(msg, lambda m: addAll(cid,listName,m.text.split('\n')))
+	elif func == "doneall":
+		listName = data[1]
+		bot.answer_callback_query(call.id, "Success")
+		msg = bot.send_message(cid, "Escriba los números de las tareas hechas separados por comas.")
+		bot.register_next_step_handler(msg, lambda m: doneAll(cid,listName,m.text.split(',')))
+	elif func == "delall":
+		listName = data[1]
+		bot.answer_callback_query(call.id, "Success")
+		msg = bot.send_message(cid, "Escriba los números de las tareas a borrar separados por comas.")
+		bot.register_next_step_handler(msg, lambda m: delAll(cid,listName,m.text.split(',')))
+	else:
+		print("Unknown callback query: " + call.data)
 	
 print("\nRunning TasksListsBot.py")
 bot.polling()
