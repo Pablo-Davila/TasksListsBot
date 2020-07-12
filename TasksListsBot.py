@@ -337,7 +337,7 @@ def command_done(message):
 				else:
 					dic["Hechas"] = [taskName]
 				writeLists(cid, dic)
-				bot.send_message(cid, "Tarea marcada como hecha.")
+				bot.send_message(cid, f"Tarea \"{taskName}\" marcada como hecha.")
 			except:
 				bot.send_message(cid, "Índice fuera de rango.")
 		else:
