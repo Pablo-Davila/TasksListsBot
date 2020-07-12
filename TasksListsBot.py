@@ -43,6 +43,7 @@ advanced_spa = {
 }
 
 news = [
+	"2020/07/12 Nuevos botones para añadir, eliminar y marcar tareas como hechas",
 	"2020/07/10 Añadidos los comandos /empty y /delAll.",
 	"2020/06/23 Mayor tolerancia a errores de sintaxis en los comandos.",
 	"2020/06/23 Añadida una lista de novedades.",
