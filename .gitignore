@@ -1,4 +1,3 @@
 # My custom
-/data
-/log
+/data*
 *.bat
