@@ -66,14 +66,14 @@ def getLists(cid):
 	'''Devuelve el diccionario de listas del chat especificado.'''
 	dic = None
 	try:
-		with open(f"data\lists_{cid}.json", "r") as f:
+		with open(f"data/lists_{cid}.json", "r") as f:
 			dic = json.loads(f.read())
 	except:
 		dic = {}
 	return dic
 	
 def writeLists(cid, dic):
-	with open(f"data\lists_{cid}.json", "w") as f:
+	with open(f"data/lists_{cid}.json", "w") as f:
 		f.write(json.dumps(dic))
 		
 def showList(cid, listName):
