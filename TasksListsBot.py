@@ -60,7 +60,7 @@ def toSentence(s):
 	return str(s).strip().capitalize()
 	
 def commandRegex(command):
-	return f"^/{command}( |$)(?i)"
+	return f"^/{command}( |$|@)(?i)"
 
 def getLists(cid):
 	'''Devuelve el diccionario de listas del chat especificado.'''
