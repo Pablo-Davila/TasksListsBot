@@ -164,13 +164,13 @@ def addAll(cid, listName, tasks):
 		
 def delAll(cid, listName, indices):
     indices = sorted([int(i.strip()) for i in indices], reverse=True)
-	for i in indices:
-		deleteTask(cid, listName, i)
+    for i in indices:
+        deleteTask(cid, listName, i)
 
 def doneAll(cid, listName, indices):
     indices = sorted([int(i.strip()) for i in indices], reverse=True)
-	for i in indices:
-		doneTask(cid, listName, i)
+    for i in indices:
+        doneTask(cid, listName, i)
 
 @bot.message_handler(regexp=commandRegex("start"))
 def command_start(message):
