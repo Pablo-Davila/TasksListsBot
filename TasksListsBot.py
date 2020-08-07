@@ -163,14 +163,14 @@ def addAll(cid, listName, tasks):
 		bot.send_message(cid, f"La lista {listName} no existe.")
 		
 def delAll(cid, listName, indices):
-    indices = sorted([int(i.strip()) for i in indices], reverse=True)
-    for i in indices:
-        deleteTask(cid, listName, i)
+	indices = sorted([int(i.strip()) for i in indices], reverse=True)
+	for i in indices:
+		deleteTask(cid, listName, i)
 
 def doneAll(cid, listName, indices):
-    indices = sorted([int(i.strip()) for i in indices], reverse=True)
-    for i in indices:
-        doneTask(cid, listName, i)
+	indices = sorted([int(i.strip()) for i in indices], reverse=True)
+	for i in indices:
+		doneTask(cid, listName, i)
 
 @bot.message_handler(regexp=commandRegex("start"))
 def command_start(message):
@@ -216,7 +216,7 @@ def command_lists(message):
 	'''Muestra las listas disponibles en este chat y el número de elementos de las mismas.'''
 	cid = message.chat.id
 	dic = getLists(cid)
-	markup = types.ReplyKeyboardMarkup(one_time_keyboard=True,selective=True)
+	markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
 	if(dic == {}):
 		bot.send_message(cid,"Aún no se ha creado ninguna lista.")
 	else:
@@ -390,20 +390,21 @@ def handle_call(call):
 	data = call.data.split('#')
 	func = data[0]
 	
+	markup = types.ForceReply()
 	if func == "addall":
 		listName = data[1]
 		bot.answer_callback_query(call.id, "Success")
-		msg = bot.send_message(cid, "Escriba en líneas separadas todas las tareas que desee añadir.")
+		msg = bot.send_message(cid, "Escriba en líneas separadas todas las tareas que desee añadir.", reply_markup=markup)
 		bot.register_next_step_handler(msg, lambda m: addAll(cid,listName,m.text.split('\n')))
 	elif func == "doneall":
 		listName = data[1]
 		bot.answer_callback_query(call.id, "Success")
-		msg = bot.send_message(cid, "Escriba los números de las tareas hechas separados por comas.")
+		msg = bot.send_message(cid, "Escriba los números de las tareas hechas separados por comas.", reply_markup=markup)
 		bot.register_next_step_handler(msg, lambda m: doneAll(cid,listName,m.text.split(',')))
 	elif func == "delall":
 		listName = data[1]
 		bot.answer_callback_query(call.id, "Success")
-		msg = bot.send_message(cid, "Escriba los números de las tareas a borrar separados por comas.")
+		msg = bot.send_message(cid, "Escriba los números de las tareas a borrar separados por comas.", reply_markup=markup)
 		bot.register_next_step_handler(msg, lambda m: delAll(cid,listName,m.text.split(',')))
 	else:
 		print("Unknown callback query: " + call.data)
