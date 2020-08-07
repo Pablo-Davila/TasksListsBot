@@ -163,16 +163,12 @@ def addAll(cid, listName, tasks):
 		bot.send_message(cid, f"La lista {listName} no existe.")
 		
 def delAll(cid, listName, indices):
-	for i in indices:
-		i = i.strip()
-	indices = sorted(indices, reverse=True)
+    indices = sorted([int(i.strip()) for i in indices], reverse=True)
 	for i in indices:
 		deleteTask(cid, listName, i)
 
 def doneAll(cid, listName, indices):
-	for i in indices:
-		i = i.strip()
-	indices = sorted(indices, reverse=True)
+    indices = sorted([int(i.strip()) for i in indices], reverse=True)
 	for i in indices:
 		doneTask(cid, listName, i)
 
