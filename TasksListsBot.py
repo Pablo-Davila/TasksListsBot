@@ -1,8 +1,13 @@
 ﻿import telebot
 import json
 import sys
+import platform
 
 from telebot import types
+
+path_data = "data/"
+if(platform.system() == "Windows"):
+    path_data = "data\\"
 
 bot = telebot.TeleBot(sys.argv[1])
 
@@ -45,7 +50,9 @@ advanced_spa = {
 }
 
 news = [
-	"2020/07/12 Nuevos botones para añadir, eliminar y marcar tareas como hechas",
+    "2020/08/07 Solución de pequeños bugs.",
+    "2020/08/06 A partir de hoy el bot estará disponible 24/7 (en principio).",
+	"2020/07/12 Nuevos botones para añadir, eliminar y marcar tareas como hechas.",
 	"2020/07/10 Añadidos los comandos /empty y /delAll.",
 	"2020/06/23 Mayor tolerancia a errores de sintaxis en los comandos.",
 	"2020/06/23 Añadida una lista de novedades.",
@@ -66,14 +73,14 @@ def getLists(cid):
 	'''Devuelve el diccionario de listas del chat especificado.'''
 	dic = None
 	try:
-		with open(f"data/lists_{cid}.json", "r") as f:
+		with open(path_data + f"lists_{cid}.json", "r") as f:
 			dic = json.loads(f.read())
 	except:
 		dic = {}
 	return dic
 	
 def writeLists(cid, dic):
-	with open(f"data/lists_{cid}.json", "w") as f:
+	with open(path_data + f"lists_{cid}.json", "w") as f:
 		f.write(json.dumps(dic))
 		
 def showList(cid, listName):
