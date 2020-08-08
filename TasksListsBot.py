@@ -1,12 +1,11 @@
 ﻿import telebot
 import json
 import sys
-import platform
 
 from telebot import types
 
 path_data = "data/"
-if(platform.system() == "Windows"):
+if(sys.platform == "win32"):
     path_data = "data\\"
 
 bot = telebot.TeleBot(sys.argv[1])
