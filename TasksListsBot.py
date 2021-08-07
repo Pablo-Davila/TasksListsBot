@@ -4,6 +4,9 @@ import sys
 
 from telebot import types
 
+
+# Global variables
+
 path_data = "data/"
 if(sys.platform == "win32"):
     path_data = "data\\"
@@ -61,6 +64,8 @@ news = [
 	"2020/06/18: Bot creado!",
 ]
 
+
+# Helper functions
 
 def toSentence(s):
 	'''Transfrom string into a correctly formatted sentence.'''
@@ -123,6 +128,10 @@ def showWithOptions(message):
 	listName = message.text.split('#')[0][:-1]
 	
 	showList(message.chat.id, listName)
+
+
+def showTEMP(message):
+	showList(message.chat.id, message.text.split('#')[0][:-1])
 
 
 def deleteTask(cid, listName, taskNumber):
@@ -213,6 +222,8 @@ def doneAll(cid, listName, indices):
 		doneTask(cid, listName, i)
 
 
+# Command handlers
+
 @bot.message_handler(regexp=commandRegex("start"))
 def command_start(message):
 	'''start command: Send welcome message.'''
@@ -262,10 +273,6 @@ def command_news(message):
 		text += "\n - " + new
 
 	bot.send_message(cid, text, parse_mode='Markdown')
-
-
-def showTEMP(message):
-	showList(message.chat.id, message.text.split('#')[0][:-1])
 
 
 @bot.message_handler(regexp=commandRegex("list(s)?"))
