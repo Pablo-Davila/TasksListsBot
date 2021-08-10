@@ -1,4 +1,4 @@
-﻿import telebot
+import telebot
 import json
 import sys
 
