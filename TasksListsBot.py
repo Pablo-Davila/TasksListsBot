@@ -1,17 +1,21 @@
-import telebot
 import json
-import sys
+from sys import argv
+from sys import platform
 
+from telebot import TeleBot
 from telebot import types
 
 
-# Global variables
+bot = TeleBot(argv[1])
 
-path_data = "data/"
-if(sys.platform == "win32"):
-    path_data = "data\\"
-
-bot = telebot.TeleBot(sys.argv[1])
+# Determine data path and adapt it to the host OS
+path_data = argv[2] if len(argv) > 2 else "data/"
+if not path_data.endswith('/'):
+	path_data += '/'
+	
+if platform == "win32":
+    path_data = path_data.replace("/", "\\")
+    path_log = path_log.replace("/", "\\")
 
 help_eng = {
 	'lists': "Display the curret set of lists.",
