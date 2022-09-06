@@ -15,7 +15,6 @@ if not path_data.endswith('/'):
 	
 if platform == "win32":
     path_data = path_data.replace("/", "\\")
-    path_log = path_log.replace("/", "\\")
 
 help_eng = {
 	'lists': "Display the curret set of lists.",
