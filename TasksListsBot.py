@@ -8,28 +8,6 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
 
-
-class UserStates(StatesGroup):
-    select_list = State()
-    addAll_tasks = State()
-    doneAll_tasks_numbers = State()
-    delAll_tasks_numbers = State()
-
-
-bot = AsyncTeleBot(argv[1], state_storage=StateMemoryStorage())
-bot.send_async_message = lambda *x, **y: (
-    asyncio.create_task(bot.send_message(*x, **y))
-)
-bot.add_custom_filter(asyncio_filters.StateFilter(bot))
-
-# Determine data path and adapt it to the host OS
-path_data = argv[2] if len(argv) > 2 else "data/"
-if not path_data.endswith('/'):
-    path_data += '/'
-
-if platform == "win32":
-    path_data = path_data.replace("/", "\\")
-
 help_eng = {
     'lists': "Display the curret set of lists.",
     'addList ListName': "Create a new empty list.",
@@ -69,6 +47,7 @@ advanced_spa = {
 }
 
 news = [
+    "2022/09/10 Autoborrado de mensajes (al fin!)",
     "2020/08/07 Solución de pequeños bugs.",
     "2020/08/06 A partir de hoy el bot estará disponible 24/7 (en principio).",
     "2020/07/12 Nuevos botones para añadir, eliminar y marcar tareas como hechas.",
@@ -76,10 +55,47 @@ news = [
     "2020/06/23 Mayor tolerancia a errores de sintaxis en los comandos.",
     "2020/06/23 Añadida una lista de novedades.",
     "2020/06/23 Resistencia a errores: A partir de ahora el bot se reinicia en caso de error, evitando así que deje de funcionar.",
-    "Añadido el comando /addAll, que permite añadir múltiples tareas a una lista, con un único comando.",
-    "A partir de ahora se toleran errores comunes en las máyúsculas y minúsculas de los comandos.",
-    "2020/06/18: Bot creado!",
+    "2020/06/?? Añadido el comando /addAll, que permite añadir múltiples tareas a una lista, con un único comando.",
+    "2020/06/?? A partir de ahora se toleran errores comunes en la sintaxis de los comandos.",
+    "2020/06/18 Bot creado!",
 ]
+
+
+class TasksListsBot(AsyncTeleBot):
+
+    async def send_message(self, *args, delete_timeout: float = None, **kwargs):
+        msg = await super().send_message(*args, **kwargs)
+        cid = msg.chat.id
+        mid = msg.id
+
+        if delete_timeout is not None:
+            await asyncio.sleep(delete_timeout)
+            try:
+                asyncio.create_task(self.delete_message(cid, mid))
+            except:
+                return
+
+    def send_async_message(self, *args, **kwargs):
+        asyncio.create_task(bot.send_message(*args, **kwargs))
+
+
+class UserStates(StatesGroup):
+    select_list = State()
+    addAll_tasks = State()
+    doneAll_tasks_numbers = State()
+    delAll_tasks_numbers = State()
+
+
+bot = TasksListsBot(argv[1], state_storage=StateMemoryStorage())
+bot.add_custom_filter(asyncio_filters.StateFilter(bot))
+
+# Determine data path and adapt it to the host OS
+path_data = argv[2] if len(argv) > 2 else "data/"
+if not path_data.endswith('/'):
+    path_data += '/'
+
+if platform == "win32":
+    path_data = path_data.replace("/", "\\")
 
 
 # Helper functions
@@ -140,15 +156,25 @@ async def showList(cid, listName):
             types.InlineKeyboardButton(
                 "🗑️", callback_data=f"delall#{listName}"
             ))
-        bot.send_async_message(cid, res, reply_markup=keyboard)
+        bot.send_async_message(
+            cid,
+            res,
+            reply_markup=keyboard,
+            delete_timeout=300
+        )
 
     elif listName == "":
-        bot.send_async_message(cid, "Debe indicar una lista.")
+        bot.send_async_message(
+            cid,
+            "Debe indicar una lista.",
+            delete_timeout=10
+        )
 
     else:
         bot.send_async_message(
             cid,
-            f"La lista {listName} no existe."
+            f"La lista {listName} no existe.",
+            delete_timeout=10
         )
 
 
@@ -163,7 +189,8 @@ async def deleteTask(cid, listName, taskNumber):
     except:
         bot.send_async_message(
             cid,
-            "No ha indicado un número de tarea válido."
+            "No ha indicado un número de tarea válido.",
+            delete_timeout=10
         )
         return
 
@@ -174,17 +201,20 @@ async def deleteTask(cid, listName, taskNumber):
             writeLists(cid, dic)
             bot.send_async_message(
                 cid,
-                f"La tarea \"{taskName}\" ha sido eliminada."
+                f"La tarea \"{taskName}\" ha sido eliminada.",
+                delete_timeout=10
             )
         except:
             bot.send_async_message(
                 cid,
-                f"Índice fuera de rango: {num}."
+                f"Índice fuera de rango: {num}.",
+                delete_timeout=10
             )
     else:
         bot.send_async_message(
             cid,
-            f"La lista {listName} no existe."
+            f"La lista {listName} no existe.",
+            delete_timeout=10
         )
 
 
@@ -206,23 +236,30 @@ async def doneTask(cid, listName, taskNumber):
                 writeLists(cid, dic)
                 bot.send_async_message(
                     cid,
-                    f"Tarea \"{taskName}\" marcada como hecha."
+                    f"Tarea \"{taskName}\" marcada como hecha.",
+                    delete_timeout=10
                 )
             except IndexError:
                 bot.send_async_message(
                     cid,
-                    "Índice fuera de rango."
+                    "Índice fuera de rango.",
+                    delete_timeout=10
                 )
             except Exception as e:
-                bot.send_async_message(cid, "ERROR")
+                bot.send_async_message(cid, "ERROR", delete_timeout=10)
                 print(e)
         except:
             bot.send_async_message(
                 cid,
-                "Debe indicar el índice en la lista de la tarea hecha."
+                "Debe indicar el índice en la lista de la tarea hecha.",
+                delete_timeout=10
             )
     else:
-        await bot.send_message(cid, f"La lista {listName} no existe.")
+        await bot.send_message(
+            cid,
+            f"La lista {listName} no existe.",
+            delete_timeout=10
+        )
 
 
 async def addAll(cid, listName, tasks):
@@ -240,12 +277,14 @@ async def addAll(cid, listName, tasks):
         writeLists(cid, dic)
         bot.send_async_message(
             cid,
-            f"Se han añadido {c} tareas a la lista \"{listName}\"."
+            f"Se han añadido {c} tareas a la lista \"{listName}\".",
+            delete_timeout=10
         )
     else:
         bot.send_async_message(
             cid,
-            f"La lista {listName} no existe."
+            f"La lista {listName} no existe.",
+            delete_timeout=10
         )
 
 
@@ -292,7 +331,12 @@ async def command_help(message):
     for c in help_spa:
         help += f"\n*/{c}*: {help_spa[c]}"
 
-    bot.send_async_message(cid, help, parse_mode='Markdown')
+    bot.send_async_message(
+        cid,
+        help,
+        parse_mode='Markdown',
+        delete_timeout=300
+    )
 
 
 @bot.message_handler(regexp=commandRegex("advanced"))
@@ -305,7 +349,12 @@ async def command_advanced(message):
     for c in advanced_spa:
         help += f"\n*/{c}*: {advanced_spa[c]}"
 
-    bot.send_async_message(cid, help, parse_mode='Markdown')
+    bot.send_async_message(
+        cid,
+        help,
+        parse_mode='Markdown',
+        delete_timeout=300
+    )
 
 
 @bot.message_handler(regexp=commandRegex("new(s)?"))
@@ -318,7 +367,11 @@ async def command_news(message):
     for new in news:
         text += "\n - " + new
 
-    bot.send_async_message(cid, text, parse_mode='Markdown')
+    bot.send_async_message(
+        cid,
+        text,
+        parse_mode='Markdown',
+        delete_timeout=300)
 
 
 @bot.message_handler(regexp=commandRegex("list(s)?"))
@@ -335,7 +388,8 @@ async def command_lists(message):
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
     if(dic == {}):
         bot.send_async_message(
-            cid, "Aún no se ha creado ninguna lista."
+            cid, "Aún no se ha creado ninguna lista.",
+            delete_timeout=10
         )
     else:
         c = 0
@@ -354,7 +408,12 @@ async def command_lists(message):
             markup.row(fila[0], fila[1])
 
         await bot.set_state(uid, UserStates.select_list, cid)
-        await bot.send_message(cid, "Elija una lista", reply_markup=markup)
+        await bot.send_message(
+            cid,
+            "Elija una lista",
+            reply_markup=markup,
+            delete_timeout=120
+        )
 
 
 @bot.message_handler(regexp=commandRegex("addList"))
@@ -378,7 +437,8 @@ async def command_addList(message):
     else:
         bot.send_async_message(
             cid,
-            "El nombre de la lista debe tener al menos 3 caracteres."
+            "El nombre de la lista debe tener al menos 3 caracteres.",
+            delete_timeout=10
         )
 
 
@@ -393,7 +453,8 @@ async def command_add(message):
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el de la tarea "
-            "separados por una coma. Ejemplo: /add Lista1, Tarea1"
+            "separados por una coma. Ejemplo: /add Lista1, Tarea1",
+            delete_timeout=10
         )
     else:
         listName = toSentence(partes[0][5:])
@@ -403,12 +464,14 @@ async def command_add(message):
         if(len(taskName) < 3):
             bot.send_async_message(
                 cid,
-                "El nombre de la tarea debe tener al menos 3 caracteres."
+                "El nombre de la tarea debe tener al menos 3 caracteres.",
+                delete_timeout=10
             )
         elif(not listName in dic.keys()):
             bot.send_async_message(
                 cid,
-                f"La lista {listName} no existe."
+                f"La lista {listName} no existe.",
+                delete_timeout=10
             )
         else:
             ls = dic[listName]
@@ -416,7 +479,8 @@ async def command_add(message):
             writeLists(cid, dic)
             bot.send_async_message(
                 cid,
-                f"Se ha añadido \"{taskName}\" a la lista \"{listName}\"."
+                f"Se ha añadido \"{taskName}\" a la lista \"{listName}\".",
+                delete_timeout=10
             )
 
 
@@ -437,7 +501,8 @@ async def command_addAll(message):
             "Tarea1\n"
             "Tarea2\n"
             "```",
-            parse_mode="markdown"
+            parse_mode="markdown",
+            delete_timeout=10
         )
     else:
         listName = toSentence(partes[0][8:])
@@ -468,17 +533,20 @@ async def command_delList(message):
         writeLists(cid, dic)
         bot.send_async_message(
             cid,
-            f"La lista {listName} ha sido eliminada."
+            f"La lista {listName} ha sido eliminada.",
+            delete_timeout=10
         )
     elif listName == "":
         bot.send_async_message(
             cid,
-            "Debe indicar la lista que eliminar."
+            "Debe indicar la lista que eliminar.",
+            delete_timeout=10
         )
     else:
         bot.send_async_message(
             cid,
-            f"La lista {listName} no existe."
+            f"La lista {listName} no existe.",
+            delete_timeout=10
         )
 
 
@@ -494,7 +562,8 @@ async def command_del(message):
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el número de la tarea "
-            "separados por una coma. Ejemplo: /del Lista1, 0"
+            "separados por una coma. Ejemplo: /del Lista1, 0",
+            delete_timeout=10
         )
     else:
         listName = toSentence(partes[0][5:])
@@ -512,7 +581,8 @@ async def command_delAll(message):
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el número de la tarea "
-            "separados por una coma. Ejemplo: /del Lista1, 0"
+            "separados por una coma. Ejemplo: /del Lista1, 0",
+            delete_timeout=10
         )
     else:
         listName = toSentence(partes[0][7:])
@@ -533,17 +603,20 @@ async def command_empty(message):
         writeLists(cid, dic)
         bot.send_async_message(
             cid,
-            f"Se han eliminado {size} tareas de la lista \"{listName}\"."
+            f"Se han eliminado {size} tareas de la lista \"{listName}\".",
+            delete_timeout=10
         )
     elif listName == "":
         bot.send_async_message(
             cid,
-            "Debe indicar la lista que vaciar."
+            "Debe indicar la lista que vaciar.",
+            delete_timeout=10
         )
     else:
         bot.send_async_message(
             cid,
-            f"La lista {listName} no existe."
+            f"La lista {listName} no existe.",
+            delete_timeout=10
         )
 
 
@@ -558,7 +631,8 @@ async def command_done(message):
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el número de la tarea "
-            "separados por una coma. Ejemplo: /done Lista1, 0"
+            "separados por una coma. Ejemplo: /done Lista1, 0",
+            delete_timeout=10
         )
     else:
         listName = toSentence(partes[0][6:])
@@ -568,7 +642,8 @@ async def command_done(message):
         except:
             bot.send_async_message(
                 cid,
-                "No ha indicado un número de tarea válido."
+                "No ha indicado un número de tarea válido.",
+                delete_timeout=10
             )
             return
         doneTask(cid, listName, taskNumber)
@@ -617,7 +692,8 @@ async def handle_call(call):
         bot.send_async_message(
             cid,
             "Escriba en líneas separadas todas las tareas que desee añadir.",
-            reply_markup=markup
+            reply_markup=markup,
+            delete_timeout=60
         )
 
     elif func == "doneall":
@@ -630,7 +706,8 @@ async def handle_call(call):
         bot.send_async_message(
             cid,
             "Escriba los números de las tareas hechas separados por espacios.",
-            reply_markup=markup
+            reply_markup=markup,
+            delete_timeout=60
         )
 
     elif func == "delall":
@@ -643,7 +720,8 @@ async def handle_call(call):
         bot.send_async_message(
             cid,
             "Escriba los números de las tareas que borrar separados por espacios.",
-            reply_markup=markup
+            reply_markup=markup,
+            delete_timeout=60
         )
 
     else:
@@ -656,7 +734,7 @@ async def command_cancel(message):
 
     cid = message.chat.id
 
-    await bot.send_message(cid, "Your state was cancelled.")
+    await bot.send_message(cid, "Your state was cancelled.", delete_timeout=10)
     await bot.delete_state(message.from_user.id, cid)
 
 
