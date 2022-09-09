@@ -116,7 +116,7 @@ def writeLists(cid, dic):
 
 
 async def showList(cid, listName):
-    '''Display requested list to a certain chat.'''
+    '''Display requested list to in certain chat.'''
 
     dic = getLists(cid)
 
@@ -428,8 +428,14 @@ async def command_addAll(message):
     if(len(partes) < 2):
         bot.send_async_message(
             cid,
-            "Debe indicar el nombre de la lista y el de la tarea "
-            "separados por una coma. Ejemplo: /add Lista1, Tarea1"
+            "Debe indicar el nombre de la lista y escribir una línea"
+            "por cada nueva tarea separados por una coma. Ejemplo:\n"
+            "```\n"
+            "/addAll Lista1\n"
+            "Tarea1\n"
+            "Tarea2\n"
+            "```",
+            parse_mode="markdown"
         )
     else:
         listName = toSentence(partes[0][8:])
@@ -621,7 +627,7 @@ async def handle_call(call):
 
         bot.send_async_message(
             cid,
-            "Escriba los números de las tareas hechas separados por comas.",
+            "Escriba los números de las tareas hechas separados por espacios.",
             reply_markup=markup
         )
 
@@ -634,7 +640,7 @@ async def handle_call(call):
 
         bot.send_async_message(
             cid,
-            "Escriba los números de las tareas a borrar separados por comas.",
+            "Escriba los números de las tareas que borrar separados por espacios.",
             reply_markup=markup
         )
 
