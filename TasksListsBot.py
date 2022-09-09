@@ -274,9 +274,11 @@ async def command_start(message):
     user = message.from_user
     cid = message.chat.id
 
-    ans = f"Hola{' ' + user.first_name if user.first_name else ''}{' ' + user.last_name if user.last_name else ''}. " \
-        "Encantado de conocerle!\nEscriba /help para acceder a la lista de comandos básicos."
-
+    full_name = (' ' + user.full_name) if user.full_name else ''
+    ans = (
+        f"Hola{full_name}. Encantado de conocerle!\n"
+        "Escriba /help para acceder a la lista de comandos básicos."
+    )
     bot.send_async_message(cid, ans)
 
 
