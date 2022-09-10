@@ -423,23 +423,31 @@ async def command_add_list(message):
     cid = message.chat.id
     list_name = to_sentence(message.text[9:])
 
-    if(len(list_name) >= 3):
-        dic = get_lists(cid)
-
-        dic[list_name] = []
-        write_lists(cid, dic)
-
-        bot.send_async_message(
-            cid,
-            f"Se ha creado la lista \"{list_name}\"."
-        )
-
-    else:
+    if(len(list_name) < 3):
         bot.send_async_message(
             cid,
             "El nombre de la lista debe tener al menos 3 caracteres.",
             delete_timeout=10
         )
+        return
+    
+    dic = get_lists(cid)
+
+    if list_name in dic:
+        bot.send_async_message(
+            cid,
+            f"Ya existe una lista llamada \"{list_name}\".",
+            delete_timeout=10
+        )
+        return
+
+    dic[list_name] = []
+    write_lists(cid, dic)
+
+    bot.send_async_message(
+        cid,
+        f"Se ha creado la lista \"{list_name}\"."
+    )
 
 
 @bot.message_handler(regexp=command_regex("add"))
