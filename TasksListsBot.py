@@ -392,7 +392,7 @@ async def command_lists(message):
     uid = message.from_user.id
     dic = get_lists(cid)
 
-    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, selective=True)
     if(dic == {}):
         bot.send_async_message(
             cid, "Aún no se ha creado ninguna lista.",
@@ -415,8 +415,8 @@ async def command_lists(message):
             markup.row(fila[0], fila[1])
 
         await bot.set_state(uid, UserStates.select_list, cid)
-        await bot.send_message(
-            cid,
+        await bot.reply_to(
+            message,
             "Elija una lista",
             reply_markup=markup,
             delete_timeout=20
