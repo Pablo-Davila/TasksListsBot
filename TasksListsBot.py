@@ -1,6 +1,7 @@
 
 import asyncio
 import json
+import os
 from sys import argv, platform
 
 from telebot import asyncio_filters, types
@@ -91,6 +92,12 @@ bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 
 # Determine data path and adapt it to the host OS
 path_data = argv[2] if len(argv) > 2 else "data/"
+if len(argv) > 2:
+    path_data = argv[2]
+else:
+    path_data = "./data/"
+    if not os.path.exists(path_data):
+        os.makedirs(path_data)
 if not path_data.endswith('/'):
     path_data += '/'
 
