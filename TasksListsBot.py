@@ -1,4 +1,3 @@
-
 import asyncio
 import json
 import os
@@ -10,41 +9,41 @@ from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
 
 HELP_ENG = {
-    'lists': "Display the curret set of lists.",
-    'addList ListName': "Create a new empty list.",
-    'delList ListName': "Remove an existing list.",
-    'advanced': "Display advanced commands."
+    "lists": "Display the curret set of lists.",
+    "addList ListName": "Create a new empty list.",
+    "delList ListName": "Remove an existing list.",
+    "advanced": "Display advanced commands.",
 }
 
 HELP_SPA = {
-    'lists': "Mostrar el conjunto de listas actual.",
-    'addList NombreLista': "Crear una nueva lista vacía.",
-    'delList ListName': "Eliminar una lista existente.",
-    'advanced': "Mostrar comandos avanzados."
+    "lists": "Mostrar el conjunto de listas actual.",
+    "addList NombreLista": "Crear una nueva lista vacía.",
+    "delList ListName": "Eliminar una lista existente.",
+    "advanced": "Mostrar comandos avanzados.",
 }
 
 ADVANCED_ENG = {
-    'show ListName': "Display the tasks of a single list.",
-    'add ListName,TaskName': "Add a task to the list.",
-    'addAll ListName': "Add multiple tasks (one per line).",
-    'del ListName,TaskNumber': "Remove a task from a list.",
-    'delAll ListName,3,1,4': "Remove multiple tasks from a list.",
-    'done ListName,TaskNumber': "Mark a task as done.",
-    'empty ListName': "Remove all the tasks in a given list.",
-    'news': "Displays the bot's most recent news",
-    'github': "Displays a link to the bot's source code"
+    "show ListName": "Display the tasks of a single list.",
+    "add ListName,TaskName": "Add a task to the list.",
+    "addAll ListName": "Add multiple tasks (one per line).",
+    "del ListName,TaskNumber": "Remove a task from a list.",
+    "delAll ListName,3,1,4": "Remove multiple tasks from a list.",
+    "done ListName,TaskNumber": "Mark a task as done.",
+    "empty ListName": "Remove all the tasks in a given list.",
+    "news": "Displays the bot's most recent news.",
+    "github": "Displays a link to the bot's source code.",
 }
 
 ADVANCED_SPA = {
-    'show ListName': "Mostrar las tareas de una única lista.",
-    'add NombreLista,NombreTarea': "Añadir una tarea a la lista.",
-    'addAll NombreLista': "Añadir multiples tareas (cada una en una línea).",
-    'del NombreLista,NumeroTarea': "Eliminar una tarea de una lista.",
-    'delAll NombreLista,3,1,4': "Eliminar multiples tareas de una lista.",
-    'done NombreLista,NumeroTarea': "Marcar una tarea como hecha.",
-    'empty NombreLista': "Eliminar todas las tareas de una lista.",
-    'news': "Muestra las últimas novedades del bot",
-    'github': "Muestra un link al código fuente del bot."
+    "show ListName": "Mostrar las tareas de una única lista.",
+    "add NombreLista,NombreTarea": "Añadir una tarea a la lista.",
+    "addAll NombreLista": "Añadir multiples tareas (cada una en una línea).",
+    "del NombreLista,NumeroTarea": "Eliminar una tarea de una lista.",
+    "delAll NombreLista,3,1,4": "Eliminar multiples tareas de una lista.",
+    "done NombreLista,NumeroTarea": "Marcar una tarea como hecha.",
+    "empty NombreLista": "Eliminar todas las tareas de una lista.",
+    "news": "Muestra las últimas novedades del bot",
+    "github": "Muestra un link al código fuente del bot.",
 }
 
 NEWS = [
@@ -98,8 +97,8 @@ else:
     path_data = "./data/"
     if not os.path.exists(path_data):
         os.makedirs(path_data)
-if not path_data.endswith('/'):
-    path_data += '/'
+if not path_data.endswith("/"):
+    path_data += "/"
 
 if platform == "win32":
     path_data = path_data.replace("/", "\\")
@@ -108,19 +107,19 @@ if platform == "win32":
 # Helper functions
 
 def to_sentence(s):
-    '''Transfrom string into a correctly formatted sentence.'''
+    """Transfrom string into a correctly formatted sentence."""
 
     return str(s).strip().capitalize()
 
 
 def command_regex(command):
-    '''Provide command regex.'''
+    """Provide command regex."""
 
     return f"^/{command}( |$|@)(?i)"
 
 
 def get_lists(cid):
-    '''Returns the lists dictionary of the specified chat.'''
+    """Return the lists dictionary of the specified chat."""
 
     dic = None
     try:
@@ -132,24 +131,24 @@ def get_lists(cid):
 
 
 def write_lists(cid, dic):
-    '''Write lists dictionary to file.'''
+    """Write lists dictionary to file."""
 
     with open(path_data + f"lists_{cid}.json", "w") as f:
         f.write(json.dumps(dic))
 
 
 async def show_lists(cid, list_name):
-    '''Display requested list to in certain chat.'''
+    """Display requested list to in certain chat."""
 
     dic = get_lists(cid)
 
-    if(list_name in dic.keys()):
+    if list_name in dic.keys():
         ls = dic[list_name]
         res = list_name + ":"
         for i in range(len(ls)):
             task = ls[i]
             res += f"\n {i}. {task}"
-        if(len(ls) == 0):
+        if len(ls) == 0:
             res += "\n(Esta lista está vacía)"
 
         keyboard = types.InlineKeyboardMarkup()
@@ -186,7 +185,7 @@ async def show_lists(cid, list_name):
 
 
 async def delete_task(cid, list_name, task_number):
-    '''Remove task from list.'''
+    """Remove task from list."""
 
     dic = get_lists(cid)
 
@@ -226,7 +225,7 @@ async def delete_task(cid, list_name, task_number):
 
 
 async def done_task(cid, list_name, task_number):
-    '''Set a task as done.'''
+    """Set a task as done."""
 
     dic = get_lists(cid)
 
@@ -270,7 +269,7 @@ async def done_task(cid, list_name, task_number):
 
 
 async def add_all(cid, list_name, tasks):
-    '''Add one or more tasks to a list.'''
+    """Add one or more tasks to a list."""
 
     dic = get_lists(cid)
     if list_name in dic.keys():
@@ -278,7 +277,7 @@ async def add_all(cid, list_name, tasks):
         c = 0
         for task_name in tasks:
             task_name = to_sentence(task_name)
-            if(len(task_name) >= 3):
+            if len(task_name) >= 3:
                 ls.append(task_name)
                 c += 1
         write_lists(cid, dic)
@@ -296,7 +295,7 @@ async def add_all(cid, list_name, tasks):
 
 
 async def del_all(cid, list_name, indices):
-    '''Remove one or more tasks from a list.'''
+    """Remove one or more tasks from a list."""
 
     indices = sorted([int(i.strip()) for i in indices], reverse=True)
     for i in indices:
@@ -304,7 +303,7 @@ async def del_all(cid, list_name, indices):
 
 
 async def done_all(cid, list_name, indices):
-    '''Set one or more tasks as done.'''
+    """Set one or more tasks as done."""
 
     indices = sorted([int(i.strip()) for i in indices], reverse=True)
     for i in indices:
@@ -315,12 +314,12 @@ async def done_all(cid, list_name, indices):
 
 @bot.message_handler(regexp=command_regex("start"))
 async def command_start(message):
-    '''start command: Send welcome message.'''
+    """start command: Send welcome message."""
 
     user = message.from_user
     cid = message.chat.id
 
-    full_name = (' ' + user.full_name) if user.full_name else ''
+    full_name = (" " + user.full_name) if user.full_name else ""
     ans = (
         f"Hola{full_name}. Encantado de conocerle!\n"
         "Escriba /help para acceder a la lista de comandos básicos."
@@ -330,7 +329,7 @@ async def command_start(message):
 
 @bot.message_handler(regexp=command_regex("help"))
 async def command_help(message):
-    '''help command: Display basic commands.'''
+    """help command: Display basic commands."""
 
     cid = message.chat.id
 
@@ -341,14 +340,14 @@ async def command_help(message):
     bot.send_async_message(
         cid,
         help,
-        parse_mode='Markdown',
+        parse_mode="Markdown",
         delete_timeout=300
     )
 
 
 @bot.message_handler(regexp=command_regex("advanced"))
 async def command_advanced(message):
-    '''advanced command: Display advanced commands.'''
+    """advanced command: Display advanced commands."""
 
     cid = message.chat.id
 
@@ -359,14 +358,14 @@ async def command_advanced(message):
     bot.send_async_message(
         cid,
         help,
-        parse_mode='Markdown',
+        parse_mode="Markdown",
         delete_timeout=300
     )
 
 
 @bot.message_handler(regexp=command_regex("new(s)?"))
 async def command_news(message):
-    '''news command: Display the most recent development news of the bot.'''
+    """news command: Display the most recent development news of the bot."""
 
     cid = message.chat.id
 
@@ -377,23 +376,23 @@ async def command_news(message):
     bot.send_async_message(
         cid,
         text,
-        parse_mode='Markdown',
+        parse_mode="Markdown",
         delete_timeout=300)
 
 
 @bot.message_handler(regexp=command_regex("list(s)?"))
 async def command_lists(message):
-    '''
+    """
     lists command: Display the lists available in this chat and the number of
     elements in each of them.
-    '''
+    """
 
     cid = message.chat.id
     uid = message.from_user.id
     dic = get_lists(cid)
 
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True, selective=True)
-    if(dic == {}):
+    if len(dic) == 0:
         bot.send_async_message(
             cid, "Aún no se ha creado ninguna lista.",
             delete_timeout=10
@@ -404,14 +403,14 @@ async def command_lists(message):
         for l in dic.keys():
             fila[c] = f"{l} #{len(dic[l])}"
 
-            if(c == 2):
+            if c == 2:
                 c = 0
                 markup.row(fila[0], fila[1], fila[2])
             else:
                 c += 1
-        if(c == 1):
+        if c == 1:
             markup.row(fila[0])
-        elif(c == 2):
+        elif c == 2:
             markup.row(fila[0], fila[1])
 
         await bot.set_state(uid, UserStates.select_list, cid)
@@ -425,19 +424,19 @@ async def command_lists(message):
 
 @bot.message_handler(regexp=command_regex("addList"))
 async def command_add_list(message):
-    '''addList command: Create a new list with the specified name.'''
+    """addList command: Create a new list with the specified name."""
 
     cid = message.chat.id
     list_name = to_sentence(message.text[9:])
 
-    if(len(list_name) < 3):
+    if len(list_name) < 3:
         bot.send_async_message(
             cid,
             "El nombre de la lista debe tener al menos 3 caracteres.",
             delete_timeout=10
         )
         return
-    
+
     dic = get_lists(cid)
 
     if list_name in dic:
@@ -459,12 +458,12 @@ async def command_add_list(message):
 
 @bot.message_handler(regexp=command_regex("add"))
 async def command_add(message):
-    '''add command: Add a single task to a list.'''
+    """add command: Add a single task to a list."""
 
     cid = message.chat.id
 
-    partes = message.text.split(',')
-    if(len(partes) < 2):
+    partes = message.text.split(",")
+    if len(partes) < 2:
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el de la tarea "
@@ -476,13 +475,13 @@ async def command_add(message):
         task_name = to_sentence(partes[1])
         dic = get_lists(cid)
 
-        if(len(task_name) < 3):
+        if len(task_name) < 3:
             bot.send_async_message(
                 cid,
                 "El nombre de la tarea debe tener al menos 3 caracteres.",
                 delete_timeout=10
             )
-        elif(not list_name in dic.keys()):
+        elif not list_name in dic.keys():
             bot.send_async_message(
                 cid,
                 f"La lista {list_name} no existe.",
@@ -501,12 +500,12 @@ async def command_add(message):
 
 @bot.message_handler(regexp=command_regex("addAll"))
 async def command_add_all(message):
-    '''addAll command: Add multiple tasks to the specified list.'''
+    """addAll command: Add multiple tasks to the specified list."""
 
     cid = message.chat.id
 
-    partes = message.text.split('\n')
-    if(len(partes) < 2):
+    partes = message.text.split("\n")
+    if len(partes) < 2:
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y escribir una línea"
@@ -527,7 +526,7 @@ async def command_add_all(message):
 
 @bot.message_handler(regexp=command_regex("show"))
 async def command_show(message):
-    '''show command: Display all the tasks in the specified list.'''
+    """show command: Display all the tasks in the specified list."""
 
     cid = message.chat.id
 
@@ -537,7 +536,7 @@ async def command_show(message):
 
 @bot.message_handler(regexp=command_regex("delList"))
 async def command_del_list(message):
-    '''delList command: Remove a list and all of its tasks.'''
+    """delList command: Remove a list and all of its tasks."""
 
     cid = message.chat.id
     dic = get_lists(cid)
@@ -567,13 +566,13 @@ async def command_del_list(message):
 
 @bot.message_handler(regexp=command_regex("del"))
 async def command_del(message):
-    '''del command: Remove a single task Elimina una única tarea de la lista especificada.'''
+    """del command: Remove a single task Elimina una única tarea de la lista especificada."""
 
     cid = message.chat.id
     dic = get_lists(cid)
 
-    partes = message.text.split(',')
-    if(len(partes) < 2):
+    partes = message.text.split(",")
+    if len(partes) < 2:
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el número de la tarea "
@@ -587,12 +586,12 @@ async def command_del(message):
 
 @bot.message_handler(regexp=command_regex("delAll"))
 async def command_del_all(message):
-    '''dellAll command: Remove a single task from the specified list.'''
+    """dellAll command: Remove a single task from the specified list."""
 
     cid = message.chat.id
 
-    partes = message.text.split(',')
-    if(len(partes) < 2):
+    partes = message.text.split(",")
+    if len(partes) < 2:
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el número de la tarea "
@@ -606,7 +605,7 @@ async def command_del_all(message):
 
 @bot.message_handler(regexp=command_regex("(empty|clear)"))
 async def command_empty(message):
-    '''empty command: Clear all the tasks from the specified list.'''
+    """empty command: Clear all the tasks from the specified list."""
 
     cid = message.chat.id
     dic = get_lists(cid)
@@ -637,12 +636,12 @@ async def command_empty(message):
 
 @bot.message_handler(regexp=command_regex("done"))
 async def command_done(message):
-    '''done command: Set a single task as done.'''
+    """done command: Set a single task as done."""
 
     cid = message.chat.id
 
-    partes = message.text.split(',')
-    if(len(partes) < 2):
+    partes = message.text.split(",")
+    if len(partes) < 2:
         bot.send_async_message(
             cid,
             "Debe indicar el nombre de la lista y el número de la tarea "
@@ -666,21 +665,23 @@ async def command_done(message):
 
 @bot.message_handler(commands=["git", "github", "source", "src"])
 async def command_github(message):
-    '''github command: Display a link to this bot's code repository.'''
+    """github command: Display a link to this bot"s code repository."""
 
     cid = message.chat.id
 
     bot.send_async_message(
         cid,
-        "Puedes encontrar el código fuente de este bot en "
-        "[GitHub](https://github.com/Pablo-Davila/TasksListsBot)",
-        parse_mode='Markdown'
+        (
+            "Puedes encontrar el código fuente de este bot en "
+            "[GitHub](https://github.com/Pablo-Davila/TasksListsBot)"
+        ),
+        parse_mode="Markdown",
     )
 
 
 @bot.message_handler(regexp=command_regex("id"))
 async def command_id(message):
-    '''id command: Display current chat's id.'''
+    """id command: Display current chat's id."""
 
     cid = message.chat.id
     bot.send_async_message(cid, f"El id de su chat es {cid}")
@@ -688,11 +689,11 @@ async def command_id(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 async def handle_call(call):
-    '''General callback query handler.'''
+    """General callback query handler."""
 
     cid = call.message.chat.id
     uid = call.from_user.id
-    data = call.data.split('#')
+    data = call.data.split("#")
     func = data[0]
 
     markup = types.ForceReply()
@@ -743,9 +744,9 @@ async def handle_call(call):
         print("Unknown callback query: " + call.data)
 
 
-@bot.message_handler(state="*", commands='cancel')
+@bot.message_handler(state="*", commands="cancel")
 async def command_cancel(message):
-    '''Cancel state'''
+    """Cancel state."""
 
     cid = message.chat.id
 
@@ -757,7 +758,7 @@ async def command_cancel(message):
 async def select_list(message):
     cid = message.chat.id
 
-    list_name = message.text.split('#')[0][:-1]
+    list_name = message.text.split("#")[0][:-1]
     await show_lists(cid, list_name)
     await bot.delete_state(message.from_user.id, cid)
 
@@ -768,13 +769,13 @@ async def add_all_state(message):
     uid = message.from_user.id
 
     async with bot.retrieve_data(uid, cid) as user_data:
-        list_name = user_data['select_list']
+        list_name = user_data["select_list"]
     await bot.delete_state(uid, cid)
 
     asyncio.create_task(add_all(
         cid,
         list_name,
-        message.text.split('\n')
+        message.text.split("\n")
     ))
     await bot.delete_state(uid, cid)
 
@@ -785,13 +786,13 @@ async def done_all_state(message):
     uid = message.from_user.id
 
     async with bot.retrieve_data(uid, cid) as user_data:
-        list_name = user_data['select_list']
+        list_name = user_data["select_list"]
     await bot.delete_state(uid, cid)
 
     asyncio.create_task(done_all(
         cid,
         list_name,
-        message.text.split(' ')
+        message.text.split(" ")
     ))
     await bot.delete_state(uid, cid)
 
@@ -802,13 +803,13 @@ async def del_all_state(message):
     uid = message.from_user.id
 
     async with bot.retrieve_data(uid, cid) as user_data:
-        list_name = user_data['select_list']
+        list_name = user_data["select_list"]
     await bot.delete_state(uid, cid)
 
     asyncio.create_task(del_all(
         cid,
         list_name,
-        message.text.split(' ')
+        message.text.split(" ")
     ))
 
 
