@@ -1,12 +1,13 @@
 import asyncio
 import json
 import os
-from sys import argv, platform
 
 from telebot import asyncio_filters, types
 from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
+
+DATA_PATH = "/data"
 
 HELP_ENG = {
     "lists": "Display the curret set of lists.",
@@ -86,22 +87,13 @@ class UserStates(StatesGroup):
     del_all_tasks_numbers = State()
 
 
-bot = TasksListsBot(argv[1], state_storage=StateMemoryStorage())
+token = os.getenv("BOT_TOKEN")
+if token is None:
+    print("Error: No token provided.")
+    exit(1)
+
+bot = TasksListsBot(token, state_storage=StateMemoryStorage())
 bot.add_custom_filter(asyncio_filters.StateFilter(bot))
-
-# Determine data path and adapt it to the host OS
-path_data = argv[2] if len(argv) > 2 else "data/"
-if len(argv) > 2:
-    path_data = argv[2]
-else:
-    path_data = "./data/"
-    if not os.path.exists(path_data):
-        os.makedirs(path_data)
-if not path_data.endswith("/"):
-    path_data += "/"
-
-if platform == "win32":
-    path_data = path_data.replace("/", "\\")
 
 
 # Helper functions
@@ -123,7 +115,7 @@ def get_lists(cid):
 
     dic = None
     try:
-        with open(path_data + f"lists_{cid}.json", "r") as f:
+        with open(DATA_PATH + f"lists_{cid}.json", "r") as f:
             dic = json.loads(f.read())
     except:
         dic = {}
@@ -133,7 +125,7 @@ def get_lists(cid):
 def write_lists(cid, dic):
     """Write lists dictionary to file."""
 
-    with open(path_data + f"lists_{cid}.json", "w") as f:
+    with open(DATA_PATH + f"lists_{cid}.json", "w") as f:
         f.write(json.dumps(dic))
 
 
