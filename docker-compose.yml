@@ -1,0 +1,8 @@
+services:
+  tasks_lists_bot:
+    container_name: tasks_lists_bot
+    build: .
+    env_file: .env
+    volumes:
+      - ./data:/data
+    restart: always
