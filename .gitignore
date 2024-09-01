@@ -1,5 +1,4 @@
-
-# My custom
-/data*
+.venv/
+data/
 *.bat
 .vscode
