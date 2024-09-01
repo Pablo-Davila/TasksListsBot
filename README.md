@@ -16,13 +16,17 @@ To run your own instance of this bot you must first [register a new Telegram bot
 
 ### Option 1: Manual execution
 
-First, you have to create an environment variable called "BOT_TOKEN" with the token you obtained in the previous step. After that, you only need the following terminal command:
+First, you have to create the necessary environment variables:
+  - `BOT_TOKEN`: The token you obtained in the previous step.
+  - `DATA_DIR_PATH`: The path for the data directory.
+
+After that, you only need to execute the following terminal command:
 
 ```Bash
 python ./tasks_lists_bot.py
 ```
 
-This will run the bot attached to your current terminal. If you want it to stay in the background you should have a look at tools like [`tmux`](https://github.com/tmux/tmux).
+This will run the bot attached to your current terminal. If you want it to stay in the background you will need to have a look at tools like [`tmux`](https://github.com/tmux/tmux).
 
 
 ### Option 2: Docker container (recommended)
@@ -30,10 +34,11 @@ This will run the bot attached to your current terminal. If you want it to stay 
 First, you have to create a ".env" file in the repository root with the following format:
 
 ```
+DATA_DIR_PATH=pat_to_the_data_directory
 BOT_TOKEN=your_bot_token_here
 ```
 
-Now, you can run the bot with a single `docker` command:
+You can now run the bot with a single `docker` command:
 
 ```Bash
 docker compose up -d --build

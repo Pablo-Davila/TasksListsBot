@@ -7,8 +7,6 @@ from telebot.async_telebot import AsyncTeleBot
 from telebot.asyncio_handler_backends import State, StatesGroup
 from telebot.asyncio_storage import StateMemoryStorage
 
-DATA_PATH = "/data"
-
 HELP_ENG = {
     "lists": "Display the curret set of lists.",
     "addList ListName": "Create a new empty list.",
@@ -87,12 +85,23 @@ class UserStates(StatesGroup):
     del_all_tasks_numbers = State()
 
 
-token = os.getenv("BOT_TOKEN")
-if token is None:
-    print("Error: No token provided.")
+DATA_DIR_PATH = os.getenv("DATA_DIR_PATH")
+if DATA_DIR_PATH is None:
+    print(
+        "Error: No data directory provided. Please, set the DATA_DIR_PATH "
+        "environment variable."
+    )
     exit(1)
 
-bot = TasksListsBot(token, state_storage=StateMemoryStorage())
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+if BOT_TOKEN is None:
+    print(
+        "Error: No token provided. Please, set the BOT_TOKEN "
+        "environment variable."
+    )
+    exit(1)
+
+bot = TasksListsBot(BOT_TOKEN, state_storage=StateMemoryStorage())
 bot.add_custom_filter(asyncio_filters.StateFilter(bot))
 
 
@@ -115,7 +124,7 @@ def get_lists(cid):
 
     dic = None
     try:
-        with open(DATA_PATH + f"lists_{cid}.json", "r") as f:
+        with open(f"{DATA_DIR_PATH}/lists_{cid}.json", "r") as f:
             dic = json.loads(f.read())
     except:
         dic = {}
@@ -125,7 +134,7 @@ def get_lists(cid):
 def write_lists(cid, dic):
     """Write lists dictionary to file."""
 
-    with open(DATA_PATH + f"lists_{cid}.json", "w") as f:
+    with open(f"{DATA_DIR_PATH}/lists_{cid}.json", "w") as f:
         f.write(json.dumps(dic))
 
 
@@ -806,5 +815,5 @@ async def del_all_state(message):
 
 
 if __name__ == "__main__":
-    print("\nRunning TasksListsBot.py")
+    print("Running TasksListsBot")
     asyncio.run(bot.polling())
