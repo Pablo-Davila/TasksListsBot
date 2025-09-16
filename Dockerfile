@@ -1,7 +1,8 @@
-FROM python:3.8.10
+FROM python:3.13-slim
 
 WORKDIR /code
 
+RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN mkdir /data
 VOLUME [ "/data" ]
 
