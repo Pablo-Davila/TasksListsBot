@@ -116,7 +116,7 @@ def to_sentence(s):
 def command_regex(command):
     """Provide command regex."""
 
-    return f"^/{command}( |$|@)(?i)"
+    return f"(?i)^/{command}( |$|@)"
 
 
 def get_lists(cid):
@@ -601,7 +601,7 @@ async def command_del_all(message):
         )
     else:
         list_name = to_sentence(partes[0][7:])
-        del_all(cid, list_name, partes[1:])
+        await del_all(cid, list_name, partes[1:])
 
 
 @bot.message_handler(regexp=command_regex("(empty|clear)"))
@@ -661,7 +661,7 @@ async def command_done(message):
                 delete_timeout=10
             )
             return
-        done_task(cid, list_name, task_number)
+        await done_task(cid, list_name, task_number)
 
 
 @bot.message_handler(commands=["git", "github", "source", "src"])
