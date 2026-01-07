@@ -85,7 +85,7 @@ class UserStates(StatesGroup):
     del_all_tasks_numbers = State()
 
 
-DATA_DIR_PATH = os.getenv("DATA_DIR_PATH")
+DATA_DIR_PATH = os.getenv("DATA_DIR_PATH", "/data")
 if DATA_DIR_PATH is None:
     print(
         "Error: No data directory provided. Please, set the DATA_DIR_PATH "

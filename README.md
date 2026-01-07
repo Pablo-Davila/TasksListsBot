@@ -31,14 +31,9 @@ This will run the bot attached to your current terminal. If you want it to stay 
 
 ### Option 2: Docker container (recommended)
 
-First, you have to create a ".env" file in the repository root with the following format:
+First, you have to create a ".env" file in the repository root with the following the format in [example.env](./example.env).
 
-```
-DATA_DIR_PATH=pat_to_the_data_directory
-BOT_TOKEN=your_bot_token_here
-```
-
-You can now run the bot with a single `docker` command:
+You will then be able to run the bot with a single `docker` command:
 
 ```Bash
 docker compose up -d --build
